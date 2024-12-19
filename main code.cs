@@ -1,4 +1,3 @@
-# Lab3Rep
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -44,28 +43,32 @@ namespace Kurs_2
         private int key = 0;
         public Caesar(int key) { this.key = key; }
 
-        private char ShiftCharacter(char el, int shift)
-        {
-            char[] alf = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-            if ("0123456789 ,.?!@#$%^&*()_+=-".IndexOf(el) >= 0)
-                return el;
-            return alf[((el + shift - 13) % 26)];
-        }
-
         public string Encrypt(string data)
         {
+            char[] alf = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
             data = data.ToUpper();
             string res = "";
-            foreach (char el in data)
-                res += ShiftCharacter(el, key);
+            foreach(char el in data)
+            {
+                if("0123456789 ,.?!@#$%^&*()_+=-".IndexOf(el) >= 0)
+                    res += el;
+                else
+                    res += alf[((el+key-13)%26)];
+            }
             return res.ToLower();
         }
         public string Decrypt(string data)
         {
+            char[] alf = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
             data = data.ToUpper();
             string res = "";
             foreach (char el in data)
-                res += ShiftCharacter(el, -key);
+            {
+                if ("0123456789 ,.?!@#$%^&*()_+=-".IndexOf(el) >= 0)
+                    res += el;
+                else
+                    res += alf[((el - key - 13) % 26)];
+            }
             return res.ToLower();
         }
         public string Encrypt(string data, string path)
@@ -246,9 +249,22 @@ namespace Kurs_2
                 Encryptor encryptor = EncryptionFactory.CreateEncryptor(1, textBoxKey.Text);
                 textBox_res.Text = encryptor.Decrypt(Client_text.Text);
             }
+        }
+        /// <summary>
+        /// Выключение видимости текста внутри BorderImage
+        /// </summary>
+        private void BorderImage_MouseEnter(object sender, MouseEventArgs e)
+        {
+            textBlockImage.Visibility = Visibility.Collapsed;
+        }
         /// <summary>
         /// Включение видимости текста внутри BorderImage
         /// </summary>
+        private void BorderImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            textBlockImage.Visibility = Visibility.Visible;
+        }
+        /// <summary>
         /// Редактирование при вводе ключа
         /// </summary>
         private void textBoxKey_MouseEnter(object sender, MouseEventArgs e)
