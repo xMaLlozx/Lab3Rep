@@ -35,6 +35,18 @@ namespace Kurs_2
             }
         }
     }
+    public static class CipherUtils
+    {
+        public static char ShiftCharacter(char el, int shift)
+        {
+            const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if ("0123456789 ,.?!@#$%^&*()_+=-".Contains(el))
+                return el;
+            int index = (alphabet.IndexOf(el) + shift) % alphabet.Length;
+            if (index < 0) index += alphabet.Length; // Handle negative shifts
+            return alphabet[index];
+        }
+    }
     /// <summary>
     /// Шифр Цезаря
     /// </summary>
@@ -45,31 +57,17 @@ namespace Kurs_2
 
         public string Encrypt(string data)
         {
-            char[] alf = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-            data = data.ToUpper();
-            string res = "";
-            foreach(char el in data)
-            {
-                if("0123456789 ,.?!@#$%^&*()_+=-".IndexOf(el) >= 0)
-                    res += el;
-                else
-                    res += alf[((el+key-13)%26)];
-            }
-            return res.ToLower();
+            return ProcessData(data, key);
         }
+
         public string Decrypt(string data)
         {
-            char[] alf = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-            data = data.ToUpper();
-            string res = "";
-            foreach (char el in data)
-            {
-                if ("0123456789 ,.?!@#$%^&*()_+=-".IndexOf(el) >= 0)
-                    res += el;
-                else
-                    res += alf[((el - key - 13) % 26)];
-            }
-            return res.ToLower();
+            return ProcessData(data, -key);
+        }
+
+        private string ProcessData(string data, int shift)
+        {
+            return new string(data.ToUpper().Select(el => CipherUtils.ShiftCharacter(el, shift)).ToArray()).ToLower();
         }
         public string Encrypt(string data, string path)
         {
