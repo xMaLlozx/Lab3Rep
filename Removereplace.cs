@@ -37,14 +37,15 @@ namespace Kurs_2
     }
     public static class CipherUtils
     {
-        public static char ShiftCharacter(char el, int shift)
+        public static char ShiftCharacter(char el, int shift, string alphabet)
         {
-            const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            if ("0123456789 ,.?!@#$%^&*()_+=-".Contains(el))
-                return el;
-            int index = (alphabet.IndexOf(el) + shift) % alphabet.Length;
-            if (index < 0) index += alphabet.Length; // Handle negative shifts
-            return alphabet[index];
+            if (alphabet.Contains(el))
+            {
+                int index = (alphabet.IndexOf(el) + shift) % alphabet.Length;
+                if (index < 0) index += alphabet.Length; // Handle negative shifts
+                return alphabet[index];
+            }
+            return el;
         }
     }
     /// <summary>
@@ -55,10 +56,10 @@ namespace Kurs_2
         private int key = 0;
         private string additionalCharacters;
 
-        public Caesar(int key, string additionalCharacters = "")
+        public Caesar(int key, EncryptionConfig config)
         {
             this.key = key;
-            this.additionalCharacters = additionalCharacters;
+            this.additionalCharacters = config.AdditionalCharacters;
         }
 
         public string Encrypt(string data)
@@ -71,20 +72,14 @@ namespace Kurs_2
             return ProcessData(data, -key);
         }
 
-        private string ProcessData(string data, int shift)
+        private string ProcessData(string data, int? shift = null)
         {
+            int effectiveShift = shift ?? key; // Default to class-level key
             const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             string extendedAlphabet = alphabet + additionalCharacters;
+
             return new string(data.ToUpper().Select(el =>
-            {
-                if (extendedAlphabet.Contains(el))
-                {
-                    int index = (extendedAlphabet.IndexOf(el) + shift) % extendedAlphabet.Length;
-                    if (index < 0) index += extendedAlphabet.Length;
-                    return extendedAlphabet[index];
-                }
-                return el;
-            }).ToArray()).ToLower();
+                CipherUtils.ShiftCharacter(el, effectiveShift, extendedAlphabet)).ToArray()).ToLower();
         }
         public string Encrypt(string data, string path)
         {
@@ -156,6 +151,10 @@ namespace Kurs_2
 
             return res = Decrypt(Encoding.UTF8.GetString(extractedBytes.ToArray()).TrimEnd('\0'));
         }
+    }
+    public class EncryptionConfig
+    {
+        public string AdditionalCharacters { get; set; } = "";
     }
     /// <summary>
     /// Шифр Атбаша
