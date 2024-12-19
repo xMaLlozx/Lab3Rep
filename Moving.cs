@@ -67,7 +67,11 @@ namespace Kurs_2
 
         private string ProcessData(string data, int shift)
         {
-            return new string(data.ToUpper().Select(el => CipherUtils.ShiftCharacter(el, shift)).ToArray()).ToLower();
+            data = data.ToUpper();
+            var result = new StringBuilder();
+            foreach (char el in data)
+                result.Append(CipherUtils.ShiftCharacter(el, shift));
+            return result.ToString().ToLower();
         }
         public string Encrypt(string data, string path)
         {
