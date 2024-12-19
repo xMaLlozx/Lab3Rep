@@ -43,7 +43,7 @@ namespace Kurs_2
             if ("0123456789 ,.?!@#$%^&*()_+=-".Contains(el))
                 return el;
             int index = (alphabet.IndexOf(el) + shift) % alphabet.Length;
-            if (index < 0) index += alphabet.Length; // Handle negative shifts
+            if (index < 0) index += alphabet.Length;
             return alphabet[index];
         }
     }
