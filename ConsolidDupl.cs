@@ -192,15 +192,24 @@ namespace Kurs_2
             InitializeComponent();
         }
         /// <summary>
-        /// Шифрование текста
+        /// Выполняет проверку выбранного действия (шифрование или стеганография)
         /// </summary>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private bool ValidateAction()
         {
             if (Radiobutton_Shifr.IsChecked != true && RadioButton_Steg.IsChecked != true)
             {
                 MessageBox.Show("Выберите действие\nШифрование - Стеганография", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                return false;
             }
+            return true;
+        }
+
+        /// <summary>
+        /// Выполняет шифрование или дешифрование текста
+        /// </summary>
+        private void ProcessText(bool isEncryption)
+        {
+            if (!ValidateAction()) return;
 
             int algorithm = ComboBox1.SelectedIndex;
             if (algorithm != 0 && algorithm != 1)
@@ -212,42 +221,33 @@ namespace Kurs_2
             Encryptor encryptor = EncryptionFactory.CreateEncryptor(algorithm, textBoxKey.Text);
 
             if (Radiobutton_Shifr.IsChecked == true)
-                textBox_res.Text = encryptor.Encrypt(Client_text.Text);
+            {
+                textBox_res.Text = isEncryption
+                    ? encryptor.Encrypt(Client_text.Text)
+                    : encryptor.Decrypt(Client_text.Text);
+            }
             else
             {
                 string targetPath = algorithm == 0 ? path : textBlockImage.Text;
-                textBox_res.Text = encryptor.Encrypt(Client_text.Text, targetPath);
+                textBox_res.Text = isEncryption
+                    ? encryptor.Encrypt(Client_text.Text, targetPath)
+                    : encryptor.Decrypt(Client_text.Text, targetPath);
             }
         }
+
         /// <summary>
-        /// Дешифрование текста
+        /// Обработчик кнопки шифрования
+        /// </summary>
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessText(true);
+        }
+        /// <summary>
+        /// Обработчик кнопки дешифрования
         /// </summary>
         private void Button_Decrypt_Click(object sender, RoutedEventArgs e)
         {
-            if (Radiobutton_Shifr.IsChecked != true && RadioButton_Steg.IsChecked != true) { MessageBox.Show("Выберите действие\nШифрование - Стеганография", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning); return; };
-            if (ComboBox1.SelectedIndex == 0)
-            {
-                    switch (Radiobutton_Shifr.IsChecked)
-                    {
-                        case true:
-                            {
-                                Encryptor encry = EncryptionFactory.CreateEncryptor(0, textBoxKey.Text);
-                                textBox_res.Text = encry.Decrypt(Client_text.Text);
-                                return;
-                            }
-                        case false:
-                            {
-                                Encryptor encry = EncryptionFactory.CreateEncryptor(0, textBoxKey.Text);
-                                textBox_res.Text = encry.Decrypt(Client_text.Text, path);
-                                return;
-                            }
-                    }
-            }
-            else if (ComboBox1.SelectedIndex == 1)
-            {
-                Encryptor encryptor = EncryptionFactory.CreateEncryptor(1, textBoxKey.Text);
-                textBox_res.Text = encryptor.Decrypt(Client_text.Text);
-            }
+            ProcessText(false);
         }
         /// <summary>
         /// Выключение видимости текста внутри BorderImage
@@ -275,22 +275,6 @@ namespace Kurs_2
             }
             else
                 textBoxKey.Background = new SolidColorBrush(Color.FromRgb(245, 245, 245));
-        }
-        /// <summary>
-        /// Выключение видимости BorderImage для работы с ним
-        /// </summary>
-        private void RadioButtonShifr_Checked(object sender, RoutedEventArgs e)
-        {
-            BorderImage.Visibility = Visibility.Collapsed;
-            buttonAddImage.Visibility = Visibility.Collapsed;
-        }
-        /// <summary>
-        /// Включение видимости BorderImage для работы с ним
-        /// </summary>
-        private void RadioButtonStegan_Checked(object sender, RoutedEventArgs e)
-        {
-            BorderImage.Visibility= Visibility.Visible;
-            buttonAddImage.Visibility = Visibility.Visible;
         }
         /// <summary>
         /// Включение textbox при входе в объект
