@@ -53,7 +53,13 @@ namespace Kurs_2
     public class Caesar : Encryptor
     {
         private int key = 0;
-        public Caesar(int key) { this.key = key; }
+        private string additionalCharacters;
+
+        public Caesar(int key, string additionalCharacters = "")
+        {
+            this.key = key;
+            this.additionalCharacters = additionalCharacters;
+        }
 
         public string Encrypt(string data)
         {
@@ -67,7 +73,18 @@ namespace Kurs_2
 
         private string ProcessData(string data, int shift)
         {
-            return new string(data.ToUpper().Select(el => CipherUtils.ShiftCharacter(el, shift)).ToArray()).ToLower();
+            const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string extendedAlphabet = alphabet + additionalCharacters;
+            return new string(data.ToUpper().Select(el =>
+            {
+                if (extendedAlphabet.Contains(el))
+                {
+                    int index = (extendedAlphabet.IndexOf(el) + shift) % extendedAlphabet.Length;
+                    if (index < 0) index += extendedAlphabet.Length;
+                    return extendedAlphabet[index];
+                }
+                return el;
+            }).ToArray()).ToLower();
         }
         public string Encrypt(string data, string path)
         {
