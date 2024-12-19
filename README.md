@@ -251,6 +251,7 @@ namespace Kurs_2
                 textBox_res.Text = encryptor.Decrypt(Client_text.Text);
             }
         }
+        Hello world
         /// <summary>
         /// Включение видимости текста внутри BorderImage
         /// </summary>
