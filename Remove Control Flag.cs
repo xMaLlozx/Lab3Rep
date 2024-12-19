@@ -209,30 +209,28 @@ namespace Kurs_2
         /// </summary>
         private void ProcessText(bool isEncryption)
         {
-            if (!ValidateAction()) return;
+            if (!ValidateAction()) 
+                throw new InvalidOperationException("Действие не выбрано.");
 
             int algorithm = ComboBox1.SelectedIndex;
             if (algorithm != 0 && algorithm != 1)
-            {
-                MessageBox.Show("Выберите корректный алгоритм шифрования", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
+                throw new ArgumentException("Выберите корректный алгоритм шифрования.");
             Encryptor encryptor = EncryptionFactory.CreateEncryptor(algorithm, textBoxKey.Text);
-
+            string result;
             if (Radiobutton_Shifr.IsChecked == true)
             {
-                textBox_res.Text = isEncryption
+                result = isEncryption
                     ? encryptor.Encrypt(Client_text.Text)
                     : encryptor.Decrypt(Client_text.Text);
             }
             else
             {
                 string targetPath = algorithm == 0 ? path : textBlockImage.Text;
-                textBox_res.Text = isEncryption
+                result = isEncryption
                     ? encryptor.Encrypt(Client_text.Text, targetPath)
                     : encryptor.Decrypt(Client_text.Text, targetPath);
             }
+            textBox_res.Text = result;
         }
 
         /// <summary>
