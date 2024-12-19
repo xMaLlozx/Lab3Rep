@@ -196,42 +196,27 @@ namespace Kurs_2
         /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Radiobutton_Shifr.IsChecked != true && RadioButton_Steg.IsChecked != true) { MessageBox.Show("Выберите действие\nШифрование - Стеганография", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning); return; };
-            if (ComboBox1.SelectedIndex == 0)
+            if (Radiobutton_Shifr.IsChecked != true && RadioButton_Steg.IsChecked != true)
             {
-                switch (Radiobutton_Shifr.IsChecked)
-                {
-                    case true:
-                        {
-                            Encryptor encry = EncryptionFactory.CreateEncryptor(0, textBoxKey.Text);
-                            textBox_res.Text = encry.Encrypt(Client_text.Text);
-                            return;
-                        }
-                    case false:
-                        {
-                            Encryptor encry = EncryptionFactory.CreateEncryptor(0, textBoxKey.Text);
-                            textBox_res.Text = encry.Encrypt(Client_text.Text, path);
-                            return;
-                        }
-                }
+                MessageBox.Show("Выберите действие\nШифрование - Стеганография", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            else if(ComboBox1.SelectedIndex == 1)
+
+            int algorithm = ComboBox1.SelectedIndex;
+            if (algorithm != 0 && algorithm != 1)
             {
-                switch (Radiobutton_Shifr.IsChecked)
-                {
-                    case true:
-                        {
-                            Encryptor encry = EncryptionFactory.CreateEncryptor(1, textBoxKey.Text);
-                            textBox_res.Text = encry.Encrypt(Client_text.Text);
-                            return;
-                        }
-                    case false:
-                        {
-                            Encryptor encry = EncryptionFactory.CreateEncryptor(1, textBoxKey.Text);
-                            textBox_res.Text = encry.Encrypt(Client_text.Text, textBlockImage.Text);
-                            return;
-                        }
-                }
+                MessageBox.Show("Выберите корректный алгоритм шифрования", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Encryptor encryptor = EncryptionFactory.CreateEncryptor(algorithm, textBoxKey.Text);
+
+            if (Radiobutton_Shifr.IsChecked == true)
+                textBox_res.Text = encryptor.Encrypt(Client_text.Text);
+            else
+            {
+                string targetPath = algorithm == 0 ? path : textBlockImage.Text;
+                textBox_res.Text = encryptor.Encrypt(Client_text.Text, targetPath);
             }
         }
         /// <summary>
