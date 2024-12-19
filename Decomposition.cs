@@ -72,14 +72,14 @@ namespace Kurs_2
             return ProcessData(data, -key);
         }
 
-        private string ProcessData(string data, int? shift = null)
+        private string ProcessData(string data, int shift)
         {
-            int effectiveShift = shift ?? key; // Default to class-level key
             const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             string extendedAlphabet = alphabet + additionalCharacters;
 
+            // Декомпозиция условного оператора
             return new string(data.ToUpper().Select(el =>
-                CipherUtils.ShiftCharacter(el, effectiveShift, extendedAlphabet)).ToArray()).ToLower();
+                CipherUtils.ShiftCharacter(el, shift, extendedAlphabet)).ToArray()).ToLower();
         }
         public string Encrypt(string data, string path)
         {
