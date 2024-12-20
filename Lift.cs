@@ -16,6 +16,16 @@ namespace Kurs_2
         string Encrypt(string data, string path);
         string Decrypt(string data);
         string Decrypt(string data, string path);
+        static char ShiftCharacter(char el, int shift, string alphabet)
+        {
+            if (alphabet.Contains(el))
+            {
+                int index = (alphabet.IndexOf(el) + shift) % alphabet.Length;
+                if (index < 0) index += alphabet.Length; // Handle negative shifts
+                return alphabet[index];
+            }
+            return el;
+        }
     }
     /// <summary>
     /// Шаблонная фабрика
@@ -53,13 +63,13 @@ namespace Kurs_2
     /// </summary>
     public class Caesar : Encryptor
     {
+        private readonly EncryptionConfig config;
         private int key = 0;
-        private string additionalCharacters;
 
         public Caesar(int key, EncryptionConfig config)
         {
             this.key = key;
-            this.additionalCharacters = config.AdditionalCharacters;
+            this.config = config;
         }
 
         public string Encrypt(string data)
@@ -72,14 +82,14 @@ namespace Kurs_2
             return ProcessData(data, -key);
         }
 
-        private string ProcessData(string data, int shift)
+        private string ProcessData(string data, int? shift = null)
         {
+            int effectiveShift = shift ?? key; // Default to class-level key
             const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            string extendedAlphabet = alphabet + additionalCharacters;
+            string extendedAlphabet = alphabet + config.AdditionalCharacters;
 
-            // Декомпозиция условного оператора
             return new string(data.ToUpper().Select(el =>
-                CipherUtils.ShiftCharacter(el, shift, extendedAlphabet)).ToArray()).ToLower();
+                Encryptor.ShiftCharacter(el, effectiveShift, extendedAlphabet)).ToArray()).ToLower();
         }
         public string Encrypt(string data, string path)
         {
